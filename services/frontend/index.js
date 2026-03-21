@@ -88,3 +88,48 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error(err);
         });
 });
+
+function SearchBookById(){
+    const books = document.querySelector('.books');
+    const inputId = document.getElementById("idInput").value;
+    console.log("http://localhost:3000/product/" + inputId);
+
+    fetch('http://localhost:3000/product/' + inputId)
+        .then((data) => {
+            if (data.ok) {
+                return data.json();
+            }
+            throw data.statusText;
+        })
+        .then((data) => {
+            console.log(data);
+            if (data) {
+                const listaLivros = document.getElementById("listaLivros");
+                const livros = listaLivros.children;
+                const tamanho = livros.length
+                for(let i = 0; i < tamanho; i++){
+                    livros[0].remove();
+                }
+
+                books.appendChild(newBook(data));
+
+                document.querySelectorAll('.button-shipping').forEach((btn) => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const cep = document.querySelector(`.book[data-id="${id}"] input`).value;
+                        calculateShipping(id, cep);
+                    });
+                });
+
+                document.querySelectorAll('.button-buy').forEach((btn) => {
+                    btn.addEventListener('click', (e) => {
+                        swal('Compra de livro', 'Sua compra foi realizada com sucesso', 'success');
+                    });
+                });
+            }
+        })
+        .catch((err) => {
+            swal('Erro', 'Erro ao listar os produtos', 'error');
+            console.error(err);
+        });
+}
